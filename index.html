@@ -901,9 +901,31 @@
                 serviceUrl: GOOGLE_SCRIPT_URL
             },
                 function (response) {
+                    // РУЧНАЯ ОТПРАВКА СТАТУСА В ТАБЛИЦУ (для страховки)
+                    if (response.reasonCode == 1100 || response.transactionStatus === 'Approved') {
+                        fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            body: JSON.stringify({
+                                orderReference: orderData.orderId,
+                                transactionStatus: 'Approved',
+                                amount: safeAmount
+                            })
+                        }).catch(err => console.error("Error manual update status:", err));
+                    }
                     window.location.href = successUrl + "?orderReference=" + orderData.orderId;
                 },
                 function (response) {
+                    // Manual fail update if needed
+                    fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'no-cors',
+                            body: JSON.stringify({
+                                orderReference: orderData.orderId,
+                                transactionStatus: 'Declined',
+                                amount: safeAmount
+                            })
+                    }).catch(e => {});
                     window.location.href = failUrl;
                 },
                 function (response) {
