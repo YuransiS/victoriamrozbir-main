@@ -810,7 +810,8 @@
                 value: parseFloat(currentPriceObj.current),
                 currency: 'UAH',
                 content_name: 'Персональна Діагностика Віка',
-                content_category: currentPriceObj.current + ' грн'
+                content_type: 'product',
+                content_ids: ['diag_v_1']
             });
         }
         function closeModal() {
@@ -982,12 +983,20 @@
                 body: JSON.stringify(formData)
             }).then(() => {
                 localStorage.setItem('purchase_price', currentPriceObj.current);
+                localStorage.setItem('lead_name', formData.name);
+                localStorage.setItem('lead_phone', formData.phone);
+
+                fbq('init', '1230047148487254', {
+                    fn: formData.name.trim().toLowerCase(),
+                    ph: formData.phone.replace(/\D/g, '')
+                });
 
                 fbq('track', 'Lead', {
                     value: parseFloat(currentPriceObj.current),
                     currency: 'UAH',
                     content_name: 'Персональна Діагностика Віка',
-                    content_category: currentPriceObj.current + ' грн'
+                    content_type: 'product',
+                    content_ids: ['diag_v_1']
                 });
 
                 pay({
